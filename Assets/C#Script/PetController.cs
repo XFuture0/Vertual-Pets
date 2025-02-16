@@ -9,11 +9,20 @@ using UnityEngine.EventSystems;
 public class PetController : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
     public GameObject MenuBox;
+    public GameObject Working;
     private Rigidbody2D rb;
     private PetAnim anim;
     private Vector2 Pet_Position;
     public float Speed;
     private bool isOpenMenu;
+    [Header("时间盒")]
+    private bool IsTime;
+    private GameObject NowTime;
+    public GameObject One;
+    public GameObject Two;
+    public GameObject Three;
+    [Header("计时器")]
+    private int Runtime;
     [Header("闲逛计时器")]
     private Vector2 RoundPosition;
     private float RoundTime;
@@ -38,12 +47,15 @@ public class PetController : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         MenuBox.transform.localScale = transform.localScale;
         PetMove();
         OnRoundTime();
+        RunTime();
+        FixTimeBox();
     }
     private void PetMove()
     {
         if (math.abs(Pet_Position.x - transform.position.x) > 10 && !isOpenMenu && !isHide && !isRound)
         {
             anim.OnRun();
+            Working.SetActive(false);
             if (rb.velocity.x > 0)
             {
                 gameObject.transform.localScale = new Vector3(1, 1, 1);
@@ -58,6 +70,7 @@ public class PetController : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         if(math.abs(Pet_Position.x - transform.position.x) > 10 && !isOpenMenu && !isHide && isRound)
         {
             anim.OnRun();
+            Working.SetActive(false);
             if (rb.velocity.x > 0)
             {
                 gameObject.transform.localScale = new Vector3(1, 1, 1);
@@ -72,6 +85,8 @@ public class PetController : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         if ((math.abs(Pet_Position.x - transform.position.x) <= 10 && !isRound) || isOpenMenu)
         {
             rb.velocity = Vector2.zero;
+            Working.SetActive(true);
+            Working.transform.localPosition = new Vector3(transform.localPosition.x + 62,transform.localPosition.y + 94,transform.localPosition.z);
             anim.OnHide();
         }
     }
@@ -146,5 +161,54 @@ public class PetController : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         gameObject.transform.position = eventData.position;
         isOpenMenu = false;
         MenuBox.SetActive(isOpenMenu);
+    }
+    private void RunTime()
+    {
+        Runtime = (int)Time.realtimeSinceStartup;
+        switch (Runtime)
+        {
+            case 3600:
+                NowTime = One;
+                One.SetActive(true);
+                IsTime = true;
+                StartCoroutine(HoldTime(One));
+                break;
+            case 7200:
+                NowTime = Two;
+                Two.SetActive(true);
+                IsTime = true;
+                StartCoroutine(HoldTime(Two));
+                break;
+            case 10800:
+                NowTime = Three;
+                Three.SetActive(true);
+                IsTime = true;
+                StartCoroutine(HoldTime(Three));
+                break;
+        }
+    }
+    private IEnumerator HoldTime(GameObject time)
+    {
+        yield return new WaitForSeconds(10f);
+        IsTime = false;
+        time.SetActive(false);
+    }
+    private void FixTimeBox()
+    {
+        if (IsTime)
+        {
+            if(NowTime == One)
+            {
+                One.transform.localScale = new Vector3(transform.localScale.x, 1, 1);
+            }
+            if (NowTime == Two)
+            {
+                Two.transform.localScale = new Vector3(transform.localScale.x, 1, 1);
+            }
+            if (NowTime == Three)
+            {
+                Three.transform.localScale = new Vector3(transform.localScale.x, 1, 1);
+            }
+        }
     }
 }
