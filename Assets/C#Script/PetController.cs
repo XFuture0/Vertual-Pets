@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using Unity.Mathematics;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -8,6 +9,7 @@ using UnityEngine.EventSystems;
 
 public class PetController : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
+    private ChacaterData chacaterdata;
     public GameObject MenuBox;
     public GameObject Working;
     private Rigidbody2D rb;
@@ -21,8 +23,12 @@ public class PetController : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     public GameObject One;
     public GameObject Two;
     public GameObject Three;
+    public GameObject TimeTip;
+    public TextMeshProUGUI TipSecond;
+    public TextMeshProUGUI TipHour;
     [Header("计时器")]
     private int Runtime;
+    private float RunHtime;
     [Header("闲逛计时器")]
     private Vector2 RoundPosition;
     private float RoundTime;
@@ -31,12 +37,9 @@ public class PetController : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     private bool isHide;
     private bool isWalk;
     private bool isRound;
-    [Header("事件监听")]
-    public VoidEventSO HideEvent;
-    public VoidEventSO WalkEvent;
-    public VoidEventSO RoundEvent;
     private void Awake()
     {
+        chacaterdata = GetComponent<ChacaterData>();
         rb = GetComponent<Rigidbody2D>();
         anim = GetComponent<PetAnim>();
     }
@@ -48,8 +51,10 @@ public class PetController : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         PetMove();
         OnRoundTime();
         RunTime();
+        UpdateRunHTime();
         FixTimeBox();
     }
+    
     private void PetMove()
     {
         if (math.abs(Pet_Position.x - transform.position.x) > 10 && !isOpenMenu && !isHide && !isRound)
@@ -114,10 +119,25 @@ public class PetController : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     }
     private void OnEnable()
     {
-        HideEvent.OnEventRaised += OnHide;
-        WalkEvent.OnEventRaised += OnWalk;
-        RoundEvent.OnEventRaised += OnRound;
+       RunHtime = chacaterdata.Time;
+       Menu.instance.HideEvent += OnHide;
+       Menu.instance.WalkEvent += OnWalk;
+       Menu.instance.RoundEvent += OnRound;
+       Menu.instance.TimeTipEvent += OnTimeTip;
     }
+
+    private void OnTimeTip()
+    {
+        IsTime = true;
+        NowTime = TimeTip;
+        TimeTip.SetActive(true);
+        var ShowTime = Runtime / 60;
+        TipSecond.text = ShowTime.ToString() + "分";
+        var ShowHTime = Mathf.Round(chacaterdata.Time * 10f) / 10f;
+        TipHour.text = ShowHTime.ToString() + "时";
+        StartCoroutine(HoldTime(TimeTip));
+    }
+
     private void OnHide()
     {
        isHide = true;
@@ -144,9 +164,10 @@ public class PetController : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     }
     private void OnDisable()
     {
-        HideEvent.OnEventRaised -= OnHide;
-        WalkEvent.OnEventRaised -= OnWalk;
-        RoundEvent.OnEventRaised -= OnRound;
+        Menu.instance.HideEvent -= OnHide;
+        Menu.instance.WalkEvent -= OnWalk;
+        Menu.instance.RoundEvent -= OnRound;
+        Menu.instance.TimeTipEvent += OnTimeTip;
     }
     public void OnDrag(PointerEventData eventData)
     {
@@ -209,6 +230,16 @@ public class PetController : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
             {
                 Three.transform.localScale = new Vector3(transform.localScale.x, 1, 1);
             }
+            if(NowTime == TimeTip)
+            {
+                TimeTip.transform.localScale = new Vector3(transform.localScale.x, 1, 1);
+            }
         }
+    }
+    private void UpdateRunHTime()
+    {
+        var ThisHTime = ((float)Runtime / 3600);
+        chacaterdata.Time = RunHtime + ThisHTime;
+
     }
 }
