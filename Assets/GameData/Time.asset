@@ -9,6 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9613ed908f0397543b89b11f238381c7, type: 3}
-  m_Name: HideEvent
+  m_Script: {fileID: 11500000, guid: d193beb01033fb04d8de9814dcd3ab37, type: 3}
+  m_Name: Time
   m_EditorClassIdentifier: 
+  time: 0

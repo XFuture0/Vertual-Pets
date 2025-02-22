@@ -42,6 +42,12 @@ public class PetController : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         chacaterdata = GetComponent<ChacaterData>();
         rb = GetComponent<Rigidbody2D>();
         anim = GetComponent<PetAnim>();
+        
+    }
+    private void Start()
+    {
+        Gamemanager.Instance.InitializedPlayer(chacaterdata);
+        RunHtime = DataManager.Instance.LoadData();
     }
     private void Update()
     {
@@ -119,11 +125,10 @@ public class PetController : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     }
     private void OnEnable()
     {
-       RunHtime = chacaterdata.Time;
-       Menu.instance.HideEvent += OnHide;
-       Menu.instance.WalkEvent += OnWalk;
-       Menu.instance.RoundEvent += OnRound;
-       Menu.instance.TimeTipEvent += OnTimeTip;
+       Menu.Instance.HideEvent += OnHide;
+       Menu.Instance.WalkEvent += OnWalk;
+       Menu.Instance.RoundEvent += OnRound;
+       Menu.Instance.TimeTipEvent += OnTimeTip;
     }
 
     private void OnTimeTip()
@@ -133,7 +138,7 @@ public class PetController : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         TimeTip.SetActive(true);
         var ShowTime = Runtime / 60;
         TipSecond.text = ShowTime.ToString() + "·Ö";
-        var ShowHTime = Mathf.Round(chacaterdata.Time * 10f) / 10f;
+        var ShowHTime = Mathf.Round(DataManager.Instance.LoadData() * 10f) / 10f;
         TipHour.text = ShowHTime.ToString() + "Ê±";
         StartCoroutine(HoldTime(TimeTip));
     }
@@ -164,10 +169,10 @@ public class PetController : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     }
     private void OnDisable()
     {
-        Menu.instance.HideEvent -= OnHide;
-        Menu.instance.WalkEvent -= OnWalk;
-        Menu.instance.RoundEvent -= OnRound;
-        Menu.instance.TimeTipEvent += OnTimeTip;
+        Menu.Instance.HideEvent -= OnHide;
+        Menu.Instance.WalkEvent -= OnWalk;
+        Menu.Instance.RoundEvent -= OnRound;
+        Menu.Instance.TimeTipEvent += OnTimeTip;
     }
     public void OnDrag(PointerEventData eventData)
     {
