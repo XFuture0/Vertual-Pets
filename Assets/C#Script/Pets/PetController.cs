@@ -140,6 +140,7 @@ public class PetController : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         TipSecond.text = ShowTime.ToString() + "·Ö";
         var ShowHTime = Mathf.Round(DataManager.Instance.LoadData() * 10f) / 10f;
         TipHour.text = ShowHTime.ToString() + "Ê±";
+        MenuBox.SetActive(false);
         StartCoroutine(HoldTime(TimeTip));
     }
 
